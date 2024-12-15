@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mappers.UserMapper">
+
+<insert id="insertUser">
+insert into users_tb (id, pw, user_name, birth, address, detail_address, phone_number)
+values (#{id}, #{pw}, #{userName}, #{birth}, #{address}, #{detailAddress}, #{phoneNumber})
+</insert>
+
+<select id="userLogin" resultType="com.example.models.User">
+SELECT uid, id, pw, auth 
+    FROM users_tb 
+    WHERE id = #{id} AND delete_yn = 'n'
+</select>
+
+<update id ="deleteUser">
+update users_tb set delete_yn = 'y'
+where uid = #{uid}
+</update>
+
+<update id="updateUser">
+    UPDATE users_tb 
+    SET user_name = #{userName}, 
+        birth = #{birth}, 
+        address = #{address}, 
+        detail_address = #{detailAddress} 
+        WHERE uid = #{uid}
+</update>
+
+<select id = "selectUser">
+select user_name as userName, address, detail_address as detailAddress, birth, phone_number as phoneNumber
+from users_tb
+where uid = #{uid} 
+</select>
+
+<select id ="countById">
+select count(*) from users_tb where id = #{id}
+</select>
+
+</mapper>
