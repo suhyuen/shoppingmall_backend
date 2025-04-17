@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mappers.ProductImagesMapper">
+
+<insert id="insertProductImage" parameterType="com.example.models.ProductImages" useGeneratedKeys="true" keyProperty="productImageId">
+insert into product_images_tb (product_image_path)
+values (#{productImagePath})
+</insert>
+
+<select id="selectProductImage" parameterType="com.example.models.ProductImages">
+select product_image_path as productImagePath
+from product_images_tb
+where product_id = #{productId}
+</select>
+</mapper>

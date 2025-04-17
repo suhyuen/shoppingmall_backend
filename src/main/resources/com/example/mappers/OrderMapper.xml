@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mappers.OrderMapper">
+ <resultMap id="orderResultMap" type="com.example.models.Order">
+    <result property="totalAmount" column="totalAmount"/>
+    <result property="userUid" column="userUid"/>
+    <result property="productId" column="productId"/>
+
+    <collection property="product" ofType="com.example.models.Product">
+        <result property="productName" column="productName"/>
+  </collection>
+  
+  <collection property="productImages" ofType="com.example.models.ProductImages">
+        <result property="productImagePath" column="productImagePath"/>
+  </collection>
+  </resultMap>
+
+<insert id="insertOrder">
+insert into orders_tb (user_uid, product_id, total_amount)
+values (#{userUid}, #{productId}, #{totalAmount})
+</insert>
+ 
+<select id="selectOrder" resultMap="orderResultMap">
+select 
+   o.total_amount as totalAmount,
+   o.status as status,
+   p.product_name as productName,
+   pi.product_image_path AS productImagePath
+   from orders_tb o
+   left join products_tb p on o.product_id = p.product_id
+   LEFT JOIN product_images_tb pi ON p.product_image_id = pi.product_image_id
+   where o.user_uid=#{userUid} and o.delete_yn = "n"
+</select>
+
+<update id="deleteOrder">
+    UPDATE orders_tb
+    SET delete_yn = 'y'
+    WHERE order_id = #{orderId} AND user_uid = #{userUid}
+</update>
+
+</mapper>

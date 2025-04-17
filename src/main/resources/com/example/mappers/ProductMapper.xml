@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mappers.ProductMapper">
+
+<!-- ProductResultMap 정의 -->
+    <resultMap id="ProductResultMap" type="com.example.models.Product">
+        <result property="productId" column="productId"/>
+        <result property="categoryId" column="categoryId"/>
+        <result property="productImageId" column="productImageId"/>
+        <result property="productName" column="productName"/>
+        <result property="price" column="price"/>
+        <result property="size" column="size"/>
+        <result property="stock" column="stock"/>
+        
+        <!-- productImages를 리스트로 매핑 -->
+        <collection property="productImages" ofType="com.example.models.ProductImages">
+        <result property="productImageId" column="productImageId"/>
+        <result property="productImagePath" column="productImagePath"/>
+    </collection>
+    </resultMap>
+   
+
+<insert id="insertProduct">
+insert into products_tb (category_id, product_image_id, product_name, price, size, stock)
+values (#{categoryId}, #{productImageId}, #{productName}, #{price}, #{size}, #{stock})
+</insert>
+
+<update id ="updateProduct">
+update products_tb
+set product_name = #{productName},
+    size = #{size},
+    price = #{price},
+    stock = #{stock}
+    where product_id = #{productId}
+</update>
+
+<update id="deleteProduct">
+update products_tb
+set delete_yn = 'y'
+where product_id = #{productId}
+</update>
+
+<select id="selectAllProduct" resultMap="ProductResultMap">
+    SELECT 
+        p.product_id AS productId,
+        p.product_name AS productName,
+        p.price, 
+        p.size, 
+        p.stock,
+        p.product_image_id as productImageId,
+        pi.product_image_path AS productImagePath
+    FROM products_tb p
+    LEFT JOIN product_images_tb pi ON p.product_image_id = pi.product_image_id
+    WHERE p.delete_yn = 'n'
+</select>
+
+<select id="selectProduct" resultMap="ProductResultMap">
+SELECT 
+        p.product_id AS productId,
+        p.category_id as categoryID,
+        p.product_name AS productName,
+        p.price, 
+        p.size, 
+        p.stock,
+        p.product_image_id as productImageId,
+        pi.product_image_path AS productImagePath
+    FROM products_tb p
+    LEFT JOIN product_images_tb pi ON p.product_image_id = pi.product_image_id
+    WHERE p.delete_yn = 'n'
+</select>
+
+<select id="selectDetailProduct" resultMap="ProductResultMap">
+select p.product_id as productId,
+       p.product_name as productName,
+       p.size,
+       p.price,
+       p.stock,
+       p.product_image_id as productImageId,
+       pi.product_image_path as productImagePath
+from products_tb p
+left join product_images_tb pi on p.product_image_id = pi.product_image_id
+where product_id = #{productId}
+</select>
+</mapper>

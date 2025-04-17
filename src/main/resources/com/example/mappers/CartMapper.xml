@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mappers.CartMapper">
+
+    <resultMap id="cartResultMap" type="com.example.models.Cart">
+    <result property="cartId" column="cartId"/>
+    <result property="userUid" column="userUid"/>
+    <result property="productId" column="productId"/>
+    <result property="quantity" column="quantity"/>
+
+    <collection property="product" ofType="com.example.models.Product">
+        <result property="productId" column="productId"/>
+        <result property="productName" column="productName"/>
+        <result property="price" column="price"/>
+        <result property="productImageId" column="productImageId"/>
+    </collection>
+    <collection property="productImages" ofType="com.example.models.ProductImages">
+        <result property="productImagePath" column="productImagePath"/>
+        
+    </collection>
+</resultMap>
+
+    <insert id="insertCart">
+        INSERT INTO carts_tb(user_uid, product_id, quantity)
+        VALUES(#{userUid}, #{productId}, #{quantity})
+    </insert>
+
+    <select id="selectCart" resultMap="cartResultMap">
+    SELECT 
+        c.cart_id AS cartId,
+        c.user_uid AS userUid,
+        c.product_id AS productId,
+        c.quantity AS quantity,        
+        p.product_name AS productName,
+        p.price as price,
+        p.product_image_id as productImageId,
+        pi.product_image_path AS productImagePath    
+    FROM 
+        carts_tb c
+    LEFT JOIN products_tb p ON c.product_id = p.product_id
+    LEFT JOIN product_images_tb pi ON p.product_image_id = pi.product_image_id
+    WHERE 
+        c.user_uid = #{userUid} and c.delete_yn = 'n'
+</select>
+
+<update id="deleteCart">
+update carts_tb
+set delete_yn = 'y'
+where cart_id = #{cartId}
+</update>
+
+</mapper>
