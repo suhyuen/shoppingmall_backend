@@ -25,9 +25,19 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         CustomUserDetails customUserDetails = (CustomUserDetails)this.customUserDetailsService.loadUserByUsername(userId);
 
         if (this.passwordEncoder.matches(userPw, customUserDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(customUserDetails.getUid(), null, customUserDetails.getAuthorities());
+        	
+            if (customUserDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+                // 관리자 권한인 경우 처리
+                return new UsernamePasswordAuthenticationToken(customUserDetails.getUid(), null, customUserDetails.getAuthorities());
+                
+            } else {
+                // 관리자 권한이 아닌 경우
+                return new UsernamePasswordAuthenticationToken(customUserDetails.getUid(), null, customUserDetails.getAuthorities());
+            }
         } else {
+            // 인증 실패
             throw new BadCredentialsException("Bad Credentials");
+            
         }
     }
 

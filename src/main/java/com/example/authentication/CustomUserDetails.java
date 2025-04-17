@@ -1,5 +1,6 @@
 package com.example.authentication;
 
+import com.example.models.Admin;
 import com.example.models.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +21,13 @@ public class CustomUserDetails implements UserDetails {
         this.username = user.getId();
         this.password = user.getPw();
         this.authorities = List.of(() -> user.getAuth());
+    }
+    
+    public CustomUserDetails(Admin admin) {
+    	this.uid = admin.getUid();
+    	this.username = admin.getId();
+    	this.password = admin.getPw();
+    	this.authorities = List.of(() -> admin.getAuth());
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,5 +1,6 @@
 package com.example.configs;
 
+import com.example.authentication.AdminLoginAuthenticationFilter;
 import com.example.authentication.JwtAuthenticationFilter;
 import com.example.authentication.LoginAuthenticationFilter;
 import com.example.authentication.UsernamePasswordAuthenticationProvider;
@@ -43,19 +44,36 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http)throws Exception {
-    	http.cors();
+    	http.cors().and();
         http.formLogin((formLogin) -> formLogin.disable());
         http.httpBasic((httpBasic) -> httpBasic.disable());
         http.csrf((csrf) -> csrf.disable());
-        http.addFilterAt(new LoginAuthenticationFilter(jwtUtil, authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), LoginAuthenticationFilter.class);
+        
+        http.addFilterAt(new LoginAuthenticationFilter(jwtUtil, authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+        // AdminLoginAuthenticationFilter는 "/adminLogin"을 처리
+        http.addFilterAt(new AdminLoginAuthenticationFilter(jwtUtil, authenticationManager()), UsernamePasswordAuthenticationFilter.class);
 
+        // JWT 필터를 로그인 필터 앞에 추가
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), LoginAuthenticationFilter.class);
+        
         http.authorizeHttpRequests(authz -> authz
+        		.requestMatchers("/images/{filename}").permitAll()
         		.requestMatchers("/signup").permitAll()
         		.requestMatchers("/sendCode").permitAll()
         		.requestMatchers("/verifyCode").permitAll()
         		.requestMatchers("/check-id").permitAll()
         		.requestMatchers("/login").permitAll()
+        		.requestMatchers("/insertAdmin").permitAll()
+        		.requestMatchers("/adminLogin").permitAll()
+        		.requestMatchers("/selectProduct").permitAll()
+        		.requestMatchers("/selectAllProduct").permitAll()
+        		.requestMatchers("/selectProductImage").permitAll()
+        		.requestMatchers("/insertProduct").hasRole("ADMIN")
+        		.requestMatchers("/updateProduct").hasRole("ADMIN")
+        		.requestMatchers("/deleteProduct").hasRole("ADMIN")
+        		.requestMatchers("/uploadImage").hasRole("ADMIN")
+        		
+        	
         		
         		
                 .anyRequest().authenticated());

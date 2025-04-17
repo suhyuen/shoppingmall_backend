@@ -25,6 +25,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     public LoginAuthenticationFilter(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        setFilterProcessesUrl("/login");
     }
 
     @Override  // Spring SecruityConfig Start!!!
